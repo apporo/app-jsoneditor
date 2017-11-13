@@ -1,9 +1,8 @@
 'use strict';
 
 jQuery(document).ready(function( $ ) {
+	console.log('Im here xxxx');
   var configwebClient = null;
-  window.addEventListener('load', function() {
-    configwebClient = new ConfigwebClient({});
-    configwebClient.loadConfigList();
-  });
+  configwebClient = new ConfigwebClient({});
+  configwebClient.loadConfigList();
 });

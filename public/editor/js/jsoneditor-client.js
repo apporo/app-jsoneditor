@@ -13,14 +13,7 @@
     }
   };
 
-  var json = {
-    "array": [1, 2, 3],
-    "boolean": true,
-    "null": null,
-    "number": 123,
-    "object": {"a": "b", "c": "d"},
-    "string": "Hello World"
-  };
+  var json = {};
 
   var editor = new JSONEditor(container, options, json);
 
@@ -29,10 +22,23 @@
     params = params || {};
 
     self.loadConfigList = function() {
-      $.getJSON("../source", {}).done(function( agents ) {
-        console.log(JSON.stringify(agents, null, 2));
+      console.log('Im here');
+      $.getJSON("../rest", {}).done(function( agents ) {
+        console.log('Data: ' + JSON.stringify(agents, null, 2));
+        agents = agents || [];
+        agents.forEach(function(agent) {
+          agent = agent || {};
+          $('#jsoneditorTextList').append('<option value="' + agent.name + '">' + agent.description + '</option>');
+        })
       }).fail(function(error) {
         console.log( "error: " + JSON.stringify(error));
+      });
+
+      $('#jsoneditorTextList').change(function() {
+        var id = $(this).val();
+        $.getJSON("../rest/" + id, {}).done(function( jsonContent ) {
+          editor.set(jsonContent);
+        });
       });
     };
   };
