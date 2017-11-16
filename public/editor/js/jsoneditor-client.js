@@ -3,7 +3,7 @@
   var container = document.getElementById('jsoneditor');
 
   var options = {
-    mode: 'tree',
+    mode: 'code',
     modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
     onError: function (err) {
       alert(err.toString());
@@ -17,14 +17,14 @@
 
   var editor = new JSONEditor(container, options, json);
 
-  var ConfigwebClient = exports.ConfigwebClient = function(params) {
+  var JsonEditorClient = exports.JsonEditorClient = function(params) {
     var self = this;
     params = params || {};
 
     self.loadConfigList = function() {
-      console.log('Im here');
-      $.getJSON("../rest", {}).done(function( agents ) {
-        console.log('Data: ' + JSON.stringify(agents, null, 2));
+      var listAction = params.listAction;
+      $.getJSON(listAction.path, {}).done(function( agents ) {
+        $('#jsoneditorTextList').append('<option value="__NULL__">(choose a document)</option>');
         agents = agents || [];
         agents.forEach(function(agent) {
           agent = agent || {};
@@ -35,11 +35,28 @@
       });
 
       $('#jsoneditorTextList').change(function() {
-        var id = $(this).val();
-        $.getJSON("../rest/" + id, {}).done(function( jsonContent ) {
-          editor.set(jsonContent);
-        });
+        self.loadJsonDocument($(this).val());
       });
     };
+
+    self.loadJsonDocument = function(id) {
+      if (id == '__NULL__') return;
+      $.getJSON(substitute(params.loadAction.path, {
+        "%DOCUMENT_ID%": id
+      }), {}).done(function( jsonContent ) {
+        editor.set(jsonContent);
+      });
+    }
   };
+
+  function substitute(str, data) {
+    var output = str.replace(/%[^%]+%/g, function(match) {
+        if (match in data) {
+            return(data[match]);
+        } else {
+            return("");
+        }
+    });
+    return(output);
+  }
 })(this, jQuery);
