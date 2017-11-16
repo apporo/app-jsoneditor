@@ -21,6 +21,21 @@
     var self = this;
     params = params || {};
 
+    var submitAction = params.submitAction || {};
+    var submitOptions = submitAction.options || [];
+    console.log(submitOptions);
+    submitOptions.forEach(function(option) {
+      $('#actionButtons').append('<button class="btn btn-default actionButton" type="button" id="' + option.value + '">' + option.label + '</button>');
+    });
+
+    var documentId = null;
+
+    $('.actionButton').click(function() {
+      var action = $(this).attr('id');
+      console.log('Action: %s', action);
+      self.saveJsonDocument(documentId, { action: action });
+    })
+
     self.loadConfigList = function() {
       var listAction = params.listAction;
       $.getJSON(listAction.path, {}).done(function( agents ) {
@@ -35,7 +50,8 @@
       });
 
       $('#jsoneditorTextList').change(function() {
-        self.loadJsonDocument($(this).val());
+        documentId = $(this).val();
+        self.loadJsonDocument(documentId);
       });
     };
 
@@ -45,6 +61,23 @@
         "%DOCUMENT_ID%": id
       }), {}).done(function( jsonContent ) {
         editor.set(jsonContent);
+      });
+    }
+
+    self.saveJsonDocument = function(id, options) {
+      if (id == '__NULL__') return;
+      var myData = Object.assign({action: options.action}, editor.get());
+      $.ajax({
+          type: 'PUT',
+          contentType: 'application/json',
+          headers: {
+              Accept: "application/json"
+          },
+          dataType: 'json',
+          url: substitute(params.submitAction.path, {
+            "%DOCUMENT_ID%": id
+          }),
+          data: JSON.stringify(myData)
       });
     }
   };
