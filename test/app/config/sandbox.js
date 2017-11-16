@@ -21,16 +21,16 @@ module.exports = {
           submitAction: {
             path: '/jsoneditor/rest/%DOCUMENT_ID%',
             method: 'PUT',
-            options: {
-              discard: {
+            options: [
+              {
                 label: 'Discard',
                 value: 'discard'
               },
-              restore: {
+              {
                 label: 'Restore',
                 value: 'restore'
               }
-            }
+            ]
           }
         }
       ]
