@@ -1,5 +1,10 @@
 (function(exports, $) {
 
+  var debugx = function() {
+    console.log.apply(console, arguments);
+  }
+  debugx.enabled = true;
+
   var container = document.getElementById('jsoneditor');
 
   var options = {
@@ -9,7 +14,7 @@
       alert(err.toString());
     },
     onModeChange: function (newMode, oldMode) {
-      console.log('Mode switched from', oldMode, 'to', newMode);
+      debugx.enabled && debugx('Mode switched from %s to %s', oldMode, newMode);
     }
   };
 
@@ -21,19 +26,21 @@
     var self = this;
     params = params || {};
 
-    var submitAction = params.submitAction || {};
-    var submitOptions = submitAction.options || [];
-    console.log(submitOptions);
-    submitOptions.forEach(function(option) {
-      $('#actionButtons').append('<button class="btn btn-default actionButton" type="button" data-toggle="tooltip" title="' + option.description + '" id="' + option.value + '">' + option.label + '</button>');
-    });
-
     var documentId = null;
 
-    $('.actionButton').click(function() {
+    var submitAction = params.submitAction || {};
+    var submitOptions = submitAction.options || [];
+    debugx.enabled && debugx('Submit options: %s', JSON.stringify(submitOptions));
+    submitOptions.forEach(function(option) {
+      $('#submitButtons').append('<button class="btn btn-default submitButton" type="button" data-toggle="tooltip" title="' + option.description + '" id="' + option.value + '">' + option.label + '</button>');
+    });
+
+    $('.submitButton').click(function() {
       var action = $(this).attr('id');
-      console.log('Action: %s', action);
-      self.saveJsonDocument(documentId, { action: action });
+      debugx.enabled && debugx('Submit action: %s', action);
+      if (documentId && action) {
+        self.saveJsonDocument(documentId, { action: action });
+      }
     })
 
     self.loadConfigList = function() {
@@ -46,7 +53,7 @@
           $('#jsoneditorTextList').append('<option value="' + agent.name + '">' + agent.description + '</option>');
         })
       }).fail(function(error) {
-        console.log( "error: " + JSON.stringify(error));
+        debugx.enabled && debugx("loadDocumentList() - error: %s", JSON.stringify(error));
       });
 
       $('#jsoneditorTextList').change(function() {
