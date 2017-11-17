@@ -21,7 +21,9 @@
     <div class="col-md-12">
       <form class="form-inline">
         <select id="jsoneditorTextList" class="form-control"></select>
-        <div id="actionButtons" class="form-group"></div>
+        <div id="actionButtons" class="form-group"><% if (descriptor && descriptor.loadAction) { %>
+          <button class="btn btn-default loadButton" type="button" data-toggle="tooltip" data-container="body" data-placement="bottom" title="<%= descriptor.loadAction.description || 'Load/Reload the document' %>" id="<%= descriptor.loadAction.value || 'load' %>"><%= descriptor.loadAction.label || 'Load' %></button>
+        <% } %></div>
       </form>
     </div>
   </div>

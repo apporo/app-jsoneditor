@@ -18,15 +18,7 @@
       }
     };
 
-    var editor = new JSONEditor(container, options, '');
-
-    var loadAction = params.loadAction || {};
-    $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" data-container="body" data-placement="bottom" title="%TITLE%" id="%ACTION%">%LABEL%</button>', {
-      '%CLASS%': 'loadButton',
-      '%ACTION%': loadAction.value || 'load',
-      '%LABEL%': loadAction.label || 'Load',
-      '%TITLE%': loadAction.description || 'Load/Reload the document'
-    }));
+    var editor = new JSONEditor(container, options, null);
 
     var submitAction = params.submitAction || {};
     var submitOptions = submitAction.options || [];
@@ -82,12 +74,14 @@
         documentId = null;
         return;
       }
-      $.getJSON(substitute(params.loadAction.path, {
-        "%DOCUMENT_ID%": id
-      }), {}).done(function( jsonContent ) {
-        documentId = id;
-        editor.set(jsonContent);
-      });
+      if (params.loadAction) {
+        $.getJSON(substitute(params.loadAction.path, {
+          "%DOCUMENT_ID%": id
+        }), {}).done(function( jsonContent ) {
+          documentId = id;
+          editor.set(jsonContent);
+        });
+      }
     }
 
     self.saveJsonDocument = function(id, options) {
@@ -109,6 +103,9 @@
         self.loadJsonDocument(id);
       });
     }
+
+    self.loadConfigList();
+    self.clearEditor();
 
     $(document).ready(function() {
       $('[data-toggle="tooltip"]').tooltip({
