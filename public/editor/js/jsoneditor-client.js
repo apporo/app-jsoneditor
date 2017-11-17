@@ -28,11 +28,12 @@
 
     var documentId = null;
 
+    var loadAction = params.loadAction || {};
     $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ACTION%">%LABEL%</button>', {
       '%CLASS%': 'loadButton',
-      '%ACTION%': 'load',
-      '%LABEL%': 'Reload',
-      '%TITLE%': 'Reload the top message from recyclebin'
+      '%ACTION%': loadAction.value,
+      '%LABEL%': loadAction.label,
+      '%TITLE%': loadAction.description
     }));
 
     var submitAction = params.submitAction || {};
@@ -68,7 +69,7 @@
     self.loadJsonDocument = function(id) {
       if (id == '__NULL__') {
         self.clearEditor();
-        documentId = id;
+        documentId = null;
         return;
       }
       $.getJSON(substitute(params.loadAction.path, {
@@ -93,6 +94,8 @@
             "%DOCUMENT_ID%": id
           }),
           data: JSON.stringify(myData)
+      }).done(function() {
+        self.loadJsonDocument(id);
       });
     }
 
@@ -103,7 +106,7 @@
       self.loadJsonDocument(id);
     });
 
-    $('.reloadButton').click(function() {
+    $('.loadButton').click(function() {
       var docId = $('#jsoneditorTextList option:selected').val();
       self.loadJsonDocument(docId);
     });
