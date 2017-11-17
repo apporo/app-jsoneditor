@@ -8,15 +8,43 @@
   <link href="../css/jsoneditor-client.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<div id="wrapper" class="container myeditor">
+  <% if (descriptor && descriptor.title) { %>
+  <div class="row">
+    <div class="col-md-12">
+      <h1 id="title"><%= descriptor.title %></h1>
+    </div>
+  </div>
+  <% } %>
 
-<div>
-  <select id="jsoneditorTextList"></select>
-</div>
+  <div class="row">
+    <div class="col-md-12">
+      <form class="form-inline">
+        <select id="jsoneditorTextList" class="form-control"></select>
+        <div id="actionButtons" class="form-group"><% if (descriptor && descriptor.loadAction) { %>
+          <button class="btn btn-default loadButton" type="button" data-toggle="tooltip" data-container="body" data-placement="bottom" title="<%= descriptor.loadAction.description || 'Load/Reload the document' %>" id="<%= descriptor.loadAction.value || 'load' %>"><%= descriptor.loadAction.label || 'Load' %></button>
+        <% } %></div>
+      </form>
+    </div>
+  </div>
 
-<div id="jsoneditor"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <div id="jsoneditor"></div>
+    </div>
+  </div>
 
-<div id="actionButtons">
-	
+  <div class="row">
+    <div class="col-md-12">
+      <div id="submitButtons"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div id="messageBox" class="well"></div>
+    </div>
+  </div>
 </div>
 
 <script src="../lib/jquery/jquery.min.js"></script>
