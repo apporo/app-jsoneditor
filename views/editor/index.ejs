@@ -8,19 +8,36 @@
   <link href="../css/jsoneditor-client.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<div id="wrapper" class="container myeditor">
+  <div class="row">
+    <div class="col-md-12">
+      <form class="form-inline">
+        <select id="jsoneditorTextList" class="form-control"></select>
+        <div id="actionButtons" class="form-group"></div>
+      </form>
+    </div>
+  </div>
 
-<div>
-  <select id="jsoneditorTextList"></select>
-  <div id="actionButtons"></div>
-</div>
+  <div class="row">
+    <div class="col-md-12">
+      <div id="jsoneditor"></div>
+    </div>
+  </div>
 
-<div id="jsoneditor"></div>
+  <div class="row">
+    <div class="col-md-6">
+      <div id="leftButtons"></div>
+    </div>
+    <div class="col-md-6">
+      <div id="submitButtons"></div>
+    </div>
+  </div>
 
-<div id="messageBox"></div>
-
-<div>
-<div id="leftButtons"></div>
-<div id="submitButtons"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <div id="messageBox" class="well"></div>
+    </div>
+  </div>
 </div>
 
 <script src="../lib/jquery/jquery.min.js"></script>

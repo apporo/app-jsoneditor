@@ -29,7 +29,7 @@
     var documentId = null;
 
     var loadAction = params.loadAction || {};
-    $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ACTION%">%LABEL%</button>', {
+    $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" data-container="body" data-placement="bottom" title="%TITLE%" id="%ACTION%">%LABEL%</button>', {
       '%CLASS%': 'loadButton',
       '%ACTION%': loadAction.value,
       '%LABEL%': loadAction.label,
@@ -41,8 +41,9 @@
     debugx.enabled && debugx('Submit options: %s', JSON.stringify(submitOptions));
     submitOptions.forEach(function(option) {
       var toolbarName = '#' + (option.toolbar || 'submitButtons');
-      $(toolbarName).append(substitute('<button class="btn %STYLE% %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ID%">%LABEL%</button>', {
-        '%CLASS%': 'submitButton',
+      var pullRight = (toolbarName == '#submitButtons') ? ' pull-right' : '';
+      $(toolbarName).append(substitute('<button class="btn %STYLE% %CLASS%" type="button" data-toggle="tooltip" data-container="body" title="%TITLE%" id="%ID%">%LABEL%</button>', {
+        '%CLASS%': 'submitButton' + pullRight,
         '%ID%': option.value,
         '%LABEL%': option.label,
         '%TITLE%': option.description,
@@ -116,24 +117,28 @@
       });
     }
 
-    $('[data-toggle="tooltip"]').tooltip();
+    $(document).ready(function() {
+      $('[data-toggle="tooltip"]').tooltip({
+        container : 'body'
+      });
 
-    $('#jsoneditorTextList').change(function() {
-      var id = $(this).val();
-      self.loadJsonDocument(id);
-    });
+      $('#jsoneditorTextList').change(function() {
+        var id = $(this).val();
+        self.loadJsonDocument(id);
+      });
 
-    $('.loadButton').click(function() {
-      var docId = $('#jsoneditorTextList option:selected').val();
-      self.loadJsonDocument(docId);
-    });
+      $('.loadButton').click(function() {
+        var docId = $('#jsoneditorTextList option:selected').val();
+        self.loadJsonDocument(docId);
+      });
 
-    $('.submitButton').click(function() {
-      var action = $(this).attr('id');
-      debugx.enabled && debugx('Submit action: %s', action);
-      if (documentId && action) {
-        self.saveJsonDocument(documentId, { action: action });
-      }
+      $('.submitButton').click(function() {
+        var action = $(this).attr('id');
+        debugx.enabled && debugx('Submit action: %s', action);
+        if (documentId && action) {
+          self.saveJsonDocument(documentId, { action: action });
+        }
+      });
     });
   };
 
