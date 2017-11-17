@@ -1,48 +1,39 @@
 (function(exports, $) {
 
-  var debugx = function() {
-    console.log.apply(console, arguments);
-  }
-  debugx.enabled = true;
-
-  var container = document.getElementById('jsoneditor');
-
-  var options = {
-    mode: 'code',
-    modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
-    onError: function (err) {
-      alert(err.toString());
-    },
-    onModeChange: function (newMode, oldMode) {
-      debugx.enabled && debugx('Mode switched from %s to %s', oldMode, newMode);
-    }
-  };
-
-  var json = {};
-
-  var editor = new JSONEditor(container, options, json);
-
   exports.JsonEditorClient = function(params) {
     var self = this;
     params = params || {};
 
     var documentId = null;
+    var container = document.getElementById('jsoneditor');
+
+    var options = {
+      mode: 'code',
+      modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
+      onError: function (err) {
+        alert(err.toString());
+      },
+      onModeChange: function (newMode, oldMode) {
+        debugx.enabled && debugx('Mode switched from %s to %s', oldMode, newMode);
+      }
+    };
+
+    var editor = new JSONEditor(container, options, '');
 
     var loadAction = params.loadAction || {};
     $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" data-container="body" data-placement="bottom" title="%TITLE%" id="%ACTION%">%LABEL%</button>', {
       '%CLASS%': 'loadButton',
-      '%ACTION%': loadAction.value,
-      '%LABEL%': loadAction.label,
-      '%TITLE%': loadAction.description
+      '%ACTION%': loadAction.value || 'load',
+      '%LABEL%': loadAction.label || 'Load',
+      '%TITLE%': loadAction.description || 'Load/Reload the document'
     }));
 
     var submitAction = params.submitAction || {};
     var submitOptions = submitAction.options || [];
     debugx.enabled && debugx('Submit options: %s', JSON.stringify(submitOptions));
     submitOptions.forEach(function(option) {
-      var toolbarName = '#' + (option.toolbar || 'submitButtons');
-      var pullRight = (toolbarName == '#submitButtons') ? ' pull-right' : '';
-      $(toolbarName).append(substitute('<button class="btn %STYLE% %CLASS%" type="button" data-toggle="tooltip" data-container="body" title="%TITLE%" id="%ID%">%LABEL%</button>', {
+      var pullRight = (option.align == 'right') ? ' pull-right' : '';
+      $('#submitButtons').append(substitute('<button class="btn %STYLE% %CLASS%" type="button" data-toggle="tooltip" data-container="body" title="%TITLE%" id="%ID%">%LABEL%</button>', {
         '%CLASS%': 'submitButton' + pullRight,
         '%ID%': option.value,
         '%LABEL%': option.label,
@@ -71,16 +62,18 @@
 
     self.getJsonInfo = function(id) {
       if (id == '__NULL__') return;
-      $.getJSON(substitute(params.infoAction.path, {
-        "%DOCUMENT_ID%": id
-      }), {}).done(function( jsonContent ) {
-        jsonContent = jsonContent || {};
-        var placeholder = {};
-        Object.keys(jsonContent).forEach(function(field) {
-          placeholder['%' + field + '%'] = jsonContent[field];
+      if (params.infoAction && params.infoAction.path) {
+        $.getJSON(substitute(params.infoAction.path, {
+          "%DOCUMENT_ID%": id
+        }), {}).done(function( jsonContent ) {
+          jsonContent = jsonContent || {};
+          var placeholder = {};
+          Object.keys(jsonContent).forEach(function(field) {
+            placeholder['%' + field + '%'] = jsonContent[field];
+          });
+          $('#messageBox').html(substitute(params.infoAction.message, placeholder));
         });
-        $('#messageBox').html(substitute(params.infoAction.message, placeholder));
-      });
+      }
     }
 
     self.loadJsonDocument = function(id) {
@@ -128,8 +121,8 @@
       });
 
       $('.loadButton').click(function() {
-        var docId = $('#jsoneditorTextList option:selected').val();
-        self.loadJsonDocument(docId);
+        var id = $('#jsoneditorTextList option:selected').val();
+        self.loadJsonDocument(id);
       });
 
       $('.submitButton').click(function() {
@@ -143,13 +136,14 @@
   };
 
   function substitute(str, data) {
-    var output = str.replace(/%[^%]+%/g, function(match) {
-        if (match in data) {
-            return(data[match]);
-        } else {
-            return("");
-        }
+    return str.replace(/%[^%]+%/g, function(match) {
+      return (match in data) ? data[match] : "";
     });
-    return(output);
   }
+
+  var debugx = function() {
+    console.log.apply(console, arguments);
+  }
+  debugx.enabled = true;
+
 })(this, jQuery);

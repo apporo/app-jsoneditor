@@ -10,6 +10,7 @@ module.exports = {
       descriptors: [
         {
           name: 'example',
+          title: 'Example Editor',
           listAction: {
             path: '/jsoneditor/rest',
             method: 'GET'
@@ -24,11 +25,16 @@ module.exports = {
             options: [
               {
                 label: 'Discard',
-                value: 'discard'
+                value: 'discard',
+                description: 'Delete the current message',
+                align: 'left',
+                style: 'danger'
               },
               {
                 label: 'Restore',
-                value: 'restore'
+                value: 'restore',
+                align: 'right',
+                style: 'primary'
               }
             ]
           }
