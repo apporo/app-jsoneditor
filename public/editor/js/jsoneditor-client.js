@@ -40,11 +40,13 @@
     var submitOptions = submitAction.options || [];
     debugx.enabled && debugx('Submit options: %s', JSON.stringify(submitOptions));
     submitOptions.forEach(function(option) {
-      $('#submitButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ID%">%LABEL%</button>', {
+      var toolbarName = '#' + (option.toolbar || 'submitButtons');
+      $(toolbarName).append(substitute('<button class="btn %STYLE% %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ID%">%LABEL%</button>', {
         '%CLASS%': 'submitButton',
         '%ID%': option.value,
         '%LABEL%': option.label,
-        '%TITLE%': option.description
+        '%TITLE%': option.description,
+        '%STYLE%': option.style ? ('btn-' + option.style) : 'btn-default'
       }));
     });
 
