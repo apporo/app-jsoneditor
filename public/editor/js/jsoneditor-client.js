@@ -28,20 +28,12 @@
 
     var documentId = null;
 
-    $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ID%">%LABEL%</button>', {
-      '%CLASS%': 'actionButton',
-      '%ID%': 'load',
-      '%LABEL%': 'Load',
-      '%TITLE%': 'Load the top message from recyclebin'
+    $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ACTION%">%LABEL%</button>', {
+      '%CLASS%': 'loadButton',
+      '%ACTION%': 'load',
+      '%LABEL%': 'Reload',
+      '%TITLE%': 'Reload the top message from recyclebin'
     }));
-
-    $('.actionButton').click(function() {
-      var docId = $('#jsoneditorTextList option:selected').val();
-      if (docId) {
-        documentId = docId;
-        self.loadJsonDocument(documentId);
-      }
-    });
 
     var submitAction = params.submitAction || {};
     var submitOptions = submitAction.options || [];
@@ -55,14 +47,6 @@
       }));
     });
 
-    $('.submitButton').click(function() {
-      var action = $(this).attr('id');
-      debugx.enabled && debugx('Submit action: %s', action);
-      if (documentId && action) {
-        self.saveJsonDocument(documentId, { action: action });
-      }
-    })
-
     self.loadConfigList = function() {
       var listAction = params.listAction;
       $.getJSON(listAction.path, {}).done(function( agents ) {
@@ -75,18 +59,22 @@
       }).fail(function(error) {
         debugx.enabled && debugx("loadDocumentList() - error: %s", JSON.stringify(error));
       });
-
-      $('#jsoneditorTextList').change(function() {
-        documentId = $(this).val();
-        self.loadJsonDocument(documentId);
-      });
     };
 
+    self.clearEditor = function() {
+      editor.setText('');
+    }
+
     self.loadJsonDocument = function(id) {
-      if (id == '__NULL__') return;
+      if (id == '__NULL__') {
+        self.clearEditor();
+        documentId = id;
+        return;
+      }
       $.getJSON(substitute(params.loadAction.path, {
         "%DOCUMENT_ID%": id
       }), {}).done(function( jsonContent ) {
+        documentId = id;
         editor.set(jsonContent);
       });
     }
@@ -109,6 +97,24 @@
     }
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    $('#jsoneditorTextList').change(function() {
+      var id = $(this).val();
+      self.loadJsonDocument(id);
+    });
+
+    $('.reloadButton').click(function() {
+      var docId = $('#jsoneditorTextList option:selected').val();
+      self.loadJsonDocument(docId);
+    });
+
+    $('.submitButton').click(function() {
+      var action = $(this).attr('id');
+      debugx.enabled && debugx('Submit action: %s', action);
+      if (documentId && action) {
+        self.saveJsonDocument(documentId, { action: action });
+      }
+    });
   };
 
   function substitute(str, data) {
