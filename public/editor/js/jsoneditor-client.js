@@ -25,7 +25,7 @@
     var submitOptions = submitAction.options || [];
     console.log(submitOptions);
     submitOptions.forEach(function(option) {
-      $('#actionButtons').append('<button class="btn btn-default actionButton" type="button" id="' + option.value + '">' + option.label + '</button>');
+      $('#actionButtons').append('<button class="btn btn-default actionButton" type="button" data-toggle="tooltip" title="' + option.description + '" id="' + option.value + '">' + option.label + '</button>');
     });
 
     var documentId = null;
@@ -80,6 +80,8 @@
           data: JSON.stringify(myData)
       });
     }
+
+    $('[data-toggle="tooltip"]').tooltip();
   };
 
   function substitute(str, data) {
