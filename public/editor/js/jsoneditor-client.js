@@ -22,17 +22,37 @@
 
   var editor = new JSONEditor(container, options, json);
 
-  var JsonEditorClient = exports.JsonEditorClient = function(params) {
+  exports.JsonEditorClient = function(params) {
     var self = this;
     params = params || {};
 
     var documentId = null;
 
+    $('#actionButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ID%">%LABEL%</button>', {
+      '%CLASS%': 'actionButton',
+      '%ID%': 'load',
+      '%LABEL%': 'Load',
+      '%TITLE%': 'Load the top message from recyclebin'
+    }));
+
+    $('.actionButton').click(function() {
+      var docId = $('#jsoneditorTextList option:selected').val();
+      if (docId) {
+        documentId = docId;
+        self.loadJsonDocument(documentId);
+      }
+    });
+
     var submitAction = params.submitAction || {};
     var submitOptions = submitAction.options || [];
     debugx.enabled && debugx('Submit options: %s', JSON.stringify(submitOptions));
     submitOptions.forEach(function(option) {
-      $('#submitButtons').append('<button class="btn btn-default submitButton" type="button" data-toggle="tooltip" title="' + option.description + '" id="' + option.value + '">' + option.label + '</button>');
+      $('#submitButtons').append(substitute('<button class="btn btn-default %CLASS%" type="button" data-toggle="tooltip" title="%TITLE%" id="%ID%">%LABEL%</button>', {
+        '%CLASS%': 'submitButton',
+        '%ID%': option.value,
+        '%LABEL%': option.label,
+        '%TITLE%': option.description
+      }));
     });
 
     $('.submitButton').click(function() {
