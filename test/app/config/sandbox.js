@@ -31,7 +31,25 @@ module.exports = {
                 style: 'danger'
               },
               {
+                label: 'Restore Restore',
+                value: 'restore',
+                align: 'right',
+                style: 'primary'
+              },
+              {
                 label: 'Restore',
+                value: 'restore',
+                align: 'right',
+                style: 'primary'
+              },
+              {
+                label: 'Restore Restore',
+                value: 'restore',
+                align: 'right',
+                style: 'primary'
+              },
+              {
+                label: 'Restore Restore',
                 value: 'restore',
                 align: 'right',
                 style: 'primary'

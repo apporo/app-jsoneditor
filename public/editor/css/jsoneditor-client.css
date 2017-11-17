@@ -2,7 +2,29 @@ body {
   font: 10.5pt arial;
   color: #4d4d4d;
   line-height: 150%;
-  width: 500px;
+}
+select#jsoneditorTextList {
+    display: inline-block;
+    flex-grow: 1;
+    margin-right: 20px;
+}
+
+.myeditor .form-inline {
+	display: flex;
+}
+
+div#actionButtons{
+	display: inline-block;
+}
+
+div#submitButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+div#submitButtons button {
+	margin-top: 10px;
 }
 
 code {
