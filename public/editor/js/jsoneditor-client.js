@@ -66,6 +66,20 @@
       editor.setText('');
     }
 
+    self.getJsonInfo = function(id) {
+      if (id == '__NULL__') return;
+      $.getJSON(substitute(params.infoAction.path, {
+        "%DOCUMENT_ID%": id
+      }), {}).done(function( jsonContent ) {
+        jsonContent = jsonContent || {};
+        var placeholder = {};
+        Object.keys(jsonContent).forEach(function(field) {
+          placeholder['%' + field + '%'] = jsonContent[field];
+        });
+        $('#messageBox').html(substitute(params.infoAction.message, placeholder));
+      });
+    }
+
     self.loadJsonDocument = function(id) {
       if (id == '__NULL__') {
         self.clearEditor();
@@ -95,6 +109,7 @@
           }),
           data: JSON.stringify(myData)
       }).done(function() {
+        self.getJsonInfo(id);
         self.loadJsonDocument(id);
       });
     }
