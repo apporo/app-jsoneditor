@@ -20,32 +20,19 @@
 
     var editor = new JSONEditor(container, options, null);
 
-    var submitAction = params.submitAction || {};
-    var submitOptions = submitAction.options || [];
-    debugx.enabled && debugx('Submit options: %s', JSON.stringify(submitOptions));
-    submitOptions.forEach(function(option) {
-      var pullRight = (option.align == 'right') ? ' pull-right' : '';
-      $('#submitButtons').append(substitute('<button class="btn %STYLE% %CLASS%" type="button" data-toggle="tooltip" data-container="body" title="%TITLE%" id="%ID%">%LABEL%</button>', {
-        '%CLASS%': 'submitButton' + pullRight,
-        '%ID%': option.value,
-        '%LABEL%': option.label,
-        '%TITLE%': option.description,
-        '%STYLE%': option.style ? ('btn-' + option.style) : 'btn-default'
-      }));
-    });
-
     self.loadConfigList = function() {
-      var listAction = params.listAction;
-      $.getJSON(listAction.path, {}).done(function( agents ) {
-        $('#jsoneditorTextList').append('<option value="__NULL__">(choose a document)</option>');
-        agents = agents || [];
-        agents.forEach(function(agent) {
-          agent = agent || {};
-          $('#jsoneditorTextList').append('<option value="' + agent.name + '">' + agent.description + '</option>');
-        })
-      }).fail(function(error) {
-        debugx.enabled && debugx("loadDocumentList() - error: %s", JSON.stringify(error));
-      });
+      if (params.listAction && params.listAction.path) {
+        $.getJSON(params.listAction.path, {}).done(function( agents ) {
+          $('#jsoneditorTextList').append('<option value="__NULL__">(choose a document)</option>');
+          agents = agents || [];
+          agents.forEach(function(agent) {
+            agent = agent || {};
+            $('#jsoneditorTextList').append('<option value="' + agent.name + '">' + agent.description + '</option>');
+          })
+        }).fail(function(error) {
+          debugx.enabled && debugx("loadDocumentList() - error: %s", JSON.stringify(error));
+        });
+      }
     };
 
     self.clearEditor = function() {
@@ -74,7 +61,7 @@
         documentId = null;
         return;
       }
-      if (params.loadAction) {
+      if (params.loadAction && params.loadAction.path) {
         $.getJSON(substitute(params.loadAction.path, {
           "%DOCUMENT_ID%": id
         }), {}).done(function( jsonContent ) {
