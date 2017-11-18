@@ -68,7 +68,16 @@ var Service = function(params) {
     };
   }
 
+  self.getStaticFilesLayer = function() {
+    return {
+      name: 'app-jsoneditor-example-assets',
+      path: contextPath + '/assets',
+      middleware: express.static(path.join(__dirname, '../../public/assets'))
+    };
+  }
+
   params.webweaverService.push([
+    self.getStaticFilesLayer(),
     params.webweaverService.getJsonBodyParserLayer(),
     self.getDynamicWebLayer()
   ]);
