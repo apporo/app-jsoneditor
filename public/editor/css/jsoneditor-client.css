@@ -1,3 +1,8 @@
+
+.myeditor > [class*='row'] {
+    padding-top: 10px;
+}
+
 .myeditor .form-inline {
 	display: flex;
 }
@@ -9,7 +14,7 @@
 }
 
 .myeditor div#actionButtons {
-	display: inline-block;
+  display: inline-block;
 }
 
 .myeditor div#submitButtons {
@@ -18,15 +23,7 @@
     justify-content: space-between;
 }
 
-.myeditor div#submitButtons button {
-	margin-top: 10px;
-}
-
 .myeditor #jsoneditor {
   width: 100%;
   height: 500px;
-}
-
-.myeditor > [class*='row'] {
-    padding-top: 10px;
 }

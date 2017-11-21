@@ -20,29 +20,48 @@
 
     var editor = new JSONEditor(container, options, null);
 
-    self.loadConfigList = function() {
+    resetJsonDocumentEditor = function() {
+      documentId = null;
+      editor.setText('');
+      $('#messageBox').html('');
+    }
+
+    self.loadJsonDocumentList = function() {
+      var promises = [];
       if (params.listAction && params.listAction.path) {
-        $.getJSON(params.listAction.path, {}).done(function( agents ) {
+        var p1 = $.getJSON(params.listAction.path, {}).done(function( agents ) {
           $('#jsoneditorTextList').append('<option value="__NULL__">(choose a document)</option>');
           agents = agents || [];
           agents.forEach(function(agent) {
             agent = agent || {};
             $('#jsoneditorTextList').append('<option value="' + agent.name + '">' + agent.description + '</option>');
-          })
+          });
+          return self.loadJsonDocument();
         }).fail(function(error) {
           debugx.enabled && debugx("loadDocumentList() - error: %s", JSON.stringify(error));
         });
+        promises.push(p1);
       }
+      return $.when.apply($, promises);
     };
 
-    self.clearEditor = function() {
-      editor.setText('');
-    }
-
-    self.getJsonInfo = function(id) {
-      if (id == '__NULL__') return;
+    self.loadJsonDocument = function(id) {
+      if (id == null || id == '__NULL__') {
+        resetJsonDocumentEditor();
+        return $.when();
+      }
+      var promises = [];
+      if (params.loadAction && params.loadAction.path) {
+        promises.push($.getJSON(substitute(params.loadAction.path, {
+          "%DOCUMENT_ID%": id
+        }), {}).done(function( jsonContent ) {
+          documentId = id;
+          editor.set(jsonContent);
+          return id;
+        }));
+      }
       if (params.infoAction && params.infoAction.path) {
-        $.getJSON(substitute(params.infoAction.path, {
+        promises.push($.getJSON(substitute(params.infoAction.path, {
           "%DOCUMENT_ID%": id
         }), {}).done(function( jsonContent ) {
           jsonContent = jsonContent || {};
@@ -51,30 +70,15 @@
             placeholder['%' + field + '%'] = jsonContent[field];
           });
           $('#messageBox').html(substitute(params.infoAction.message, placeholder));
-        });
+        }));
       }
-    }
-
-    self.loadJsonDocument = function(id) {
-      if (id == '__NULL__') {
-        self.clearEditor();
-        documentId = null;
-        return;
-      }
-      if (params.loadAction && params.loadAction.path) {
-        $.getJSON(substitute(params.loadAction.path, {
-          "%DOCUMENT_ID%": id
-        }), {}).done(function( jsonContent ) {
-          documentId = id;
-          editor.set(jsonContent);
-        });
-      }
+      return $.when.apply($, promises);
     }
 
     self.saveJsonDocument = function(id, options) {
-      if (id == '__NULL__') return;
+      if (id == '__NULL__') return $.when();
       var myData = Object.assign({action: options.action}, editor.get());
-      $.ajax({
+      var p1 = $.ajax({
           type: 'PUT',
           contentType: 'application/json',
           headers: {
@@ -86,13 +90,12 @@
           }),
           data: JSON.stringify(myData)
       }).done(function() {
-        self.getJsonInfo(id);
-        self.loadJsonDocument(id);
+        return self.loadJsonDocument(id);
       });
+      return $.when(p1);
     }
 
-    self.loadConfigList();
-    self.clearEditor();
+    self.loadJsonDocumentList();
 
     $(document).ready(function() {
       $('[data-toggle="tooltip"]').tooltip({
