@@ -62,7 +62,7 @@ var Service = function(params) {
 
   self.getDynamicWebLayer = function() {
     return {
-      name: 'app-jsoneditor-example',
+      name: 'app-jsoneditor-example-rest',
       path: contextPath + '/rest',
       middleware: router
     };
