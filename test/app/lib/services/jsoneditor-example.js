@@ -4,7 +4,7 @@ var path = require('path');
 var Devebot = require('devebot');
 var Promise = Devebot.require('bluebird');
 var lodash = Devebot.require('lodash');
-var debugx = Devebot.require('debug')('appJsoneditor:example');
+var debugx = Devebot.require('pinbug')('app-jsoneditor:example');
 
 var Service = function(params) {
   debugx.enabled && debugx(' + constructor begin ...');
@@ -85,14 +85,6 @@ var Service = function(params) {
   debugx.enabled && debugx(' - constructor end!');
 };
 
-Service.argumentSchema = {
-  "id": "jsoneditorExample",
-  "type": "object",
-  "properties": {
-    "webweaverService": {
-      "type": "object"
-    }
-  }
-};
+Service.referenceList = [ "webweaverService" ];
 
 module.exports = Service;

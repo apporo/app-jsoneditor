@@ -1,3 +1,5 @@
+'use strict';
+
 var contextPath = '/jsoneditor';
 
 module.exports = {

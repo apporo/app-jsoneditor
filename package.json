@@ -1,6 +1,6 @@
 {
   "name": "app-jsoneditor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Devebot application jsoneditor layerware",
   "homepage": "https://github.com/apporo/app-jsoneditor.git",
   "author": {
@@ -17,13 +17,13 @@
     "devebot-plugin"
   ],
   "peerDependencies": {
-    "app-webweaver": "^0.2.1",
-    "devebot": "^0.2.2"
+    "app-webweaver": "^0.2.2",
+    "devebot": "^0.2.6"
   },
   "dependencies": {
-    "app-webweaver": "^0.2.1",
+    "app-webweaver": "^0.2.2",
     "bootstrap": "^3.3.7",
-    "devebot": "^0.2.2",
+    "devebot": "^0.2.6",
     "jquery": "^3.1.1",
     "jsoneditor": "^5.5.9"
   }
