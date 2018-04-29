@@ -11,5 +11,5 @@ node test/app
 ```
 
 ```curl
-http://localhost:7979/webinject-example/index
+http://localhost:7979/jsoneditor/editor/example/index.html
 ```
