@@ -1,23 +1,30 @@
 'use strict';
 
-var path = require('path');
-var Devebot = require('devebot');
-var lodash = Devebot.require('lodash');
-var debugx = Devebot.require('pinbug')('app-jsoneditor:service');
+const path = require('path');
+const Devebot = require('devebot');
+const chores = Devebot.require('chores');
+const lodash = Devebot.require('lodash');
 
-var Service = function(params) {
-  debugx.enabled && debugx(' + constructor begin ...');
-
+function JsoneditorService(params) {
   params = params || {};
 
-  var self = this;
-  var logger = params.loggingFactory.getLogger();
+  let self = this;
+  let LX = params.loggingFactory.getLogger();
+  let TR = params.loggingFactory.getTracer();
+  let packageName = params.packageName || 'app-jsoneditor';
+  let blockRef = chores.getBlockRef(__filename, packageName);
 
-  var pluginCfg = params.sandboxConfig;
-  var contextPath = pluginCfg.contextPath || '/jsoneditor';
-  var express = params.webweaverService.express;
+  LX.has('silly') && LX.log('silly', TR.toMessage({
+    tags: [ blockRef, 'constructor-begin' ],
+    text: ' + constructor start ...'
+  }));
 
-  var clientLibs = [{
+  let pluginCfg = params.sandboxConfig;
+  let contextPath = pluginCfg.contextPath || '/jsoneditor';
+  let webweaverService = params["app-webweaver/webweaverService"];
+  let express = webweaverService.express;
+
+  let clientLibs = [{
     name: 'bootstrap',
     modulePath: 'bootstrap',
     relativePath: '/..'
@@ -34,10 +41,15 @@ var Service = function(params) {
   self.buildJavascriptLibraries = function(clientLibs, layers) {
     clientLibs = clientLibs || [];
     layers = layers || [];
-    for(var i=0; i<clientLibs.length; i++) {
+    for(let i=0; i<clientLibs.length; i++) {
       let clientDir = path.join(path.dirname(require.resolve(clientLibs[i].modulePath)),
           clientLibs[i].relativePath);
-      debugx.enabled && debugx(' - client[%s] path: %s', clientLibs[i].name, clientDir);
+      LX.has('debug') && LX.log('debug', TR.add({
+        clientName: clientLibs[i].name,
+        clientPath: clientDir
+      }).toMessage({
+        text: ' - client[${clientName}] path: ${clientPath}'
+      }));
       layers.push({
         name: 'app-jsoneditor-lib-' + clientLibs[i].name,
         path: contextPath + '/editor/lib/' + clientLibs[i].name,
@@ -49,7 +61,7 @@ var Service = function(params) {
 
   self.buildViewRouter = function(express, descriptor) {
     descriptor = descriptor || {};
-    var app = new express();
+    let app = new express();
     app.set('views', path.join(__dirname, '/../../views/editor'));
     app.set('view engine', 'ejs');
     app.get(['/index', '/index.html'], function(req, res, next) {
@@ -83,18 +95,24 @@ var Service = function(params) {
   }
 
   if (pluginCfg.autowired !== false) {
-    debugx.enabled && debugx(' - register app-jsoneditor with app-webweaver');
-    var layers = self.buildJavascriptLibraries(clientLibs);
+    LX.has('debug') && LX.log('debug', TR.toMessage({
+      tags: [ blockRef, 'register-webweaver' ],
+      text: ' - register app-jsoneditor with app-webweaver'
+    }));
+    let layers = self.buildJavascriptLibraries(clientLibs);
     layers.push(self.getStaticFilesLayer());
     lodash.forEach(pluginCfg.descriptors, function(descriptor) {
       layers.push(self.getDynamicWebLayer(descriptor));
     });
-    params.webweaverService.push(layers, pluginCfg.priority);
+    webweaverService.push(layers, pluginCfg.priority);
   }
 
-  debugx.enabled && debugx(' - constructor end!');
+  LX.has('silly') && LX.log('silly', TR.toMessage({
+    tags: [ blockRef, 'constructor-end' ],
+    text: ' - constructor end!'
+  }));
 };
 
-Service.referenceList = [ "webweaverService" ];
+JsoneditorService.referenceList = [ "app-webweaver/webweaverService" ];
 
-module.exports = Service;
+module.exports = JsoneditorService;
